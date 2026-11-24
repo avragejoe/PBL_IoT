@@ -22,20 +22,21 @@
 #define BUZZER ??
 #define BUTTON ??
 #define POT ??
+#define FAN_PWM ??
 
 #define SCL 33 // i2c communication MPE280
 #define SDA 32
 
 #define MOSI 23    // shared spi pins  // mosi or/and D1
 #define MISO 19
-#define SCK 18  // D0
+#define CLOCK 18  // D0
 #define RESET 22 // RST
 
-#define IRQ 17 // inturupt pin for MRC522
+#define IRQ 0 // inturupt pin for MRC522
 
-#define CS_MFRC552 18 // device select
+#define CS_MFRC552 17 // device select
 #define CS_OLED 16
-#define CS_SD_CARD 5
+#define CS_SD_CARD 15
 
 #define DC_OLED 4
 #define SCREEN_WIDTH 128
@@ -104,8 +105,16 @@ bool buzzerOn = false; //buzzer on or off status, make an ISR
 		clearBit0; //clear bit 0
 	}
 
+	const float ReadTemp(){
+		
+	}
+
+
+
 void setup() {
 
+	Serial.begin(115200);
+	
 	WiFi.softAP(ssid,password);
 	Serial.print("IP Address =");
 	Serial.println(WiFi.softAPIP());
@@ -113,12 +122,32 @@ void setup() {
     server.begin();
 	Serial.println("web server started");
 
+	  Serial.println("program started ");
+
+  Wire.begin(); //lab6 start
+  Serial.println("I2C communication started");
+    if (!BMP.begin(0x76)){
+    Serial.println("NO BMP280 detected");
+    }
+    else{
+    Serial.println("BMP280 detected");
+    } 
+  
+  Display.begin(SSD1306_SWITCHCAPVCC);
+  Display.clearDisplay();
+  Display.setTextSize(1);
+  Display.setTextColor(WHITE);  
+  Display.setCursor(0, 0);
+  Display.print("initializing"); 
+  Display.display();   //lab 6 end
+
 	pinMode(GREEN_LED, OUTPUT); //set green led as an output
 	pinMode(RED_LED, OUTPUT); //set red led as an output
 	pinMode(BUZZER, OUTPUT); //set buzzer as an output
+	pinMode(FAN_PWM, OUTPUT);
 
 }
 
 void loop() {
-
+  temperature = BMP.readTemperature();
 }
